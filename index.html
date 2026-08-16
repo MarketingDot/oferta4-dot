@@ -322,9 +322,12 @@ class Component extends DCLogic {
   backToStage1 = () => this.setState(s => ({ lastPick1: s.pick1, pick1: null }));
   backToStage2 = () => this.setState(s => ({ lastPick2: s.pick2, pick2: null }));
   goForward = () => {
-    const { pick1, pick2, hasReachedFinal } = this.state;
-    if (pick1 && pick2) { this.resgatar(); return; }
-    if (pick1 && hasReachedFinal) { this.resgatar(); }
+    const { pick1, pick2, hasReachedFinal, lastPick1, lastPick2 } = this.state;
+    const stage = pick1 == null ? 1 : pick2 == null ? 2 : 3;
+    if (stage === 1 && lastPick1) { this.setState({ pick1: lastPick1 }); return; }
+    if (stage === 2 && lastPick2) { this.setState({ pick2: lastPick2, hasReachedFinal: true }); return; }
+    if (stage === 2 && hasReachedFinal) { this.resgatar(); return; }
+    if (stage === 3) { this.resgatar(); }
   };
   resgatar = () => {
     document.body.style.cssText = '';
