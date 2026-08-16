@@ -319,8 +319,8 @@ class Component extends DCLogic {
     window.scrollTo(0, this._bodyScrollY || 0);
     this.setState({ sheetOpen: false });
   };
-  backToStage1 = () => this.setState({ pick1: null });
-  backToStage2 = () => this.setState({ pick2: null });
+  backToStage1 = () => this.setState(s => ({ lastPick1: s.pick1, pick1: null }));
+  backToStage2 = () => this.setState(s => ({ lastPick2: s.pick2, pick2: null }));
   goForward = () => {
     const { pick1, pick2, hasReachedFinal } = this.state;
     if (pick1 && pick2) { this.resgatar(); return; }
@@ -342,14 +342,16 @@ class Component extends DCLogic {
     const stage = pick1 == null ? 1 : pick2 == null ? 2 : 3;
     const p = (n) => `grid-area:1/1;min-width:0;box-sizing:border-box;padding:0 16px;display:flex;flex-direction:column;gap:12px;transform:translateX(${(n-stage)*100}%);transition:transform .38s cubic-bezier(.25,.46,.45,.94)${stage!==n?';pointer-events:none':''}`;
 
+    const effectivePick1 = pick1 || this.state.lastPick1 || null;
+    const effectivePick2 = pick2 || this.state.lastPick2 || null;
     const flavorList1 = FLAVORS.map(f => ({
       name: f.name, img: f.img,
-      selected: pick1 === f.name, unselected: pick1 !== f.name,
+      selected: effectivePick1 === f.name, unselected: effectivePick1 !== f.name,
       onClick: () => this.setState({ pick1: f.name }),
     }));
     const flavorList2 = FLAVORS.map(f => ({
       name: f.name, img: f.img,
-      selected: pick2 === f.name, unselected: pick2 !== f.name,
+      selected: effectivePick2 === f.name, unselected: effectivePick2 !== f.name,
       onClick: () => this.setState({ pick2: f.name, hasReachedFinal: true }),
     }));
 
